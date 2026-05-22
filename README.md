@@ -9,8 +9,7 @@ This document covers hands-on practice scenarios performed inside my Active Dire
 
 ## 1. Account Management
 
-1. Account Management
-Scenario 1.1 - Unlock a Locked Out User Account
+### Scenario 1.1 - Unlock a Locked Out User Account
 Ticket simulation: User calls in saying they cannot log in and are receiving an "account locked" error.
 Steps taken:
 

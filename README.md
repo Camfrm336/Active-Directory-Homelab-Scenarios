@@ -3,8 +3,7 @@
 This document covers hands-on practice scenarios performed inside my Active Directory home lab. Each scenario simulates a real help desk ticket and documents the steps taken to resolve it, tools used, and key takeaways. All scenarios were performed on a Windows Server 2019 domain controller and a domain-joined Windows 10 client VM.
 
 ## Table of Contents
-1. [Account Management](1-account-manangement)
-2. Group Policy
+1. Account Management
 
 
 ## 1. Account Management

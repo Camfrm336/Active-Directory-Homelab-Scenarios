@@ -32,3 +32,36 @@ Intentionally triggered by entering the wrong password more than the lockout thr
 📸 Screenshot: ADUC showing the user account with the Account tab open and the unlock checkbox visible  
 ### Key takeaway:  
 Always check the Account Lockout Policy threshold in Group Policy so you can explain to users why their account locked. Also check Event Viewer for Event ID 4740 to see which machine triggered the lockout.
+
+### Scenario 1.2 - Password Reset  
+### Ticket simulation: User forgot their password and cannot log in.  
+### Steps taken:  
+
+1. Verified the caller's identity before resetting (name, employee ID, manager name)
+2. Located the user in ADUC
+3. Right-clicked the user account and selected Reset Password
+4. Set a temporary password meeting complexity requirements
+5. Checked "User must change password at next logon"
+6. Communicated the temporary password to the user securely
+7. Confirmed the user was able to log in and set a new password
+
+Commands used:
+``` powershell
+# PowerShell method
+Set-ADAccountPassword -Identity cmcmaster -Reset -NewPassword (ConvertTo-SecureString "TempPass123!" -AsPlainText -Force)
+Set-ADUser -Identity cmcmaster -ChangePasswordAtLogon $true
+```
+<img height="300" alt="password-reset" src="https://github.com/user-attachments/assets/5103c9f1-fb3c-4676-bfee-cb8562f1d1df" />  
+
+📸 Screenshot: ADUC Reset Password dialog with "User must change password at next logon" checked
+
+<img height="300" alt="change-password-on-signin" src="https://github.com/user-attachments/assets/808d8337-db64-4ab0-9708-5ad88ac23d31" />  
+
+📸 Screenshot: Affected user being prompted to change password on sign-in  
+
+<img height="300" alt="successful-password-change" src="https://github.com/user-attachments/assets/7166a0b1-2e01-4fac-b711-4dc9883df935" />  
+
+📸 Screenshot: Succesful password change  
+
+### Key takeaway:  
+Always verify identity before resetting. Always force a password change at next logon so the admin never knows the user's permanent password. Temp passwords are not allowed if passwords do not expire.

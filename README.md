@@ -63,4 +63,62 @@ Set-ADUser -Identity cmcmaster -ChangePasswordAtLogon $true
 📸 Screenshot: Succesful password change  
 
 ### Key takeaway:  
-Always verify identity before resetting. Always force a password change at next logon so the admin never knows the user's permanent password. Temp passwords are not allowed if passwords do not expire.
+Always verify identity before resetting. Always force a password change at next logon so the admin never knows the user's permanent password. Temp passwords are not allowed if passwords do not expire.  
+
+### Scenario 1.3 - Disable Account(Employee Offboarding)  
+#### Ticket simulation: HR submits a ticket that an employee has left the company and their account needs to be deactivated immediately.
+#### Steps taken:  
+1. Located the user account in ADUC
+2. Right-clicked the account and selected Disable Account
+3. Moved the account to a Disabled Users OU (created specifically for offboarded accounts)
+4. Removed the user from all security groups
+5. Documented the action with timestamp in the ticket
+
+<img height="300" alt="disabled-account" src="https://github.com/user-attachments/assets/bee85e4c-28a4-4213-a611-5e67462a7ff5" />
+
+📸 Screenshot: ADUC showing the user account with the disabled icon (down arrow on the user icon) + Disabled Users OU showing the moved account  
+#### Key takeaway:  
+Never delete accounts immediately. Disable and move them first. Deleted accounts cannot be easily recovered and may break dependencies like file ownership or email history.  
+
+### Scenario 1.4 - New User Onboarding  
+
+#### Ticket simulation: Manager submits a ticket requesting a new user account for a new hire starting Monday.  
+
+#### Steps taken:  
+1. Created a new user account in the correct department OU
+2. Set username in the format: first initial + last name (jmcmaster)
+3. Set a temporary password and checked "User must change password at next logon"
+4. Added the user to the appropriate security groups for their department
+5. Verified the user could log into the domain-joined workstation
+#### Commands Used  
+``` powershell
+$PASSWORD_FOR_USERS   = "Password1"
+$USER_FIRST_LAST = "Joshua McMaster"
+# ------------------------------------------------------ #
+
+$password = ConvertTo-SecureString $PASSWORD_FOR_USERS -AsPlainText -Force
+# New-ADOrganizationalUnit -Name _USERS -ProtectedFromAccidentalDeletion $false
+$first = $USER_FIRST_LAST.Split(" ")[0].ToLower()
+$last = $USER_FIRST_LAST.Split(" ")[1].ToLower()
+$username = "$($first.Substring(0,1))$($last)".ToLower()
+Write-Host "Creating user: $($username)" -BackgroundColor Black -ForegroundColor Cyan
+    
+New-AdUser -AccountPassword $password `
+            -GivenName $first `
+            -Surname $last `
+            -DisplayName $username `
+            -Name $username `
+            -EmployeeID $username `
+            -PasswordNeverExpires $true `
+            -Path "ou=_USERS,$(([ADSI]`"").distinguishedName)" `
+            -Enabled $true
+```
+<img height="300" alt="user-created" src="https://github.com/user-attachments/assets/c41f40ae-c86a-4917-9acc-e291d66b536e" />  
+
+📸 Screenshot: New user account created in ADUC in the correct OU  
+<img height="300" alt="successful-user-creation" src="https://github.com/user-attachments/assets/28752d03-0b62-431f-9148-f8b8651d2a07" />  
+
+📸 Screenshot: Windows 10 login screen showing successful domain login with the new account  
+#### Key takeaway:  
+Always match the OU and security group to the user's department. Security group membership determines what resources they can access from day one.
+
